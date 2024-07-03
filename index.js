@@ -449,9 +449,9 @@ app.get("/product/:id", async (req, res) => {
 });
 //Add Product For Admin
 app.post("/product", authenticateToken, async (req, res) => {
-  const { name, price, description, img } = req.body;
+  const { name, price, description, type, spec, img } = req.body;
   const { user } = req.user;
-  if (!name || !price || !description || !img) {
+  if (!name || !price || !description || !img || !type || !spec) {
     return res
       .status(400)
       .json({ error: true, message: "Please provide all fields" });
@@ -463,6 +463,8 @@ app.post("/product", authenticateToken, async (req, res) => {
       price,
       description,
       img: img,
+      type,
+      spec,
       addBy: user._id,
     });
 
