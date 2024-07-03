@@ -422,7 +422,7 @@ app.delete("/payment/:id", authenticateToken, async (req, res) => {
   }
 });
 
-//Product---------------------
+//Product-------------------
 //Get Products
 app.get("/product", async (req, res) => {
   try {
