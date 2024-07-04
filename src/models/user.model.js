@@ -7,7 +7,7 @@ const userSchema = new Schema({
   email: { type: String, required: true },
   password: { type: String, required: true },
   isAdmin: { type: Boolean, default: false },
-  img: { type: String },
+  img: { public_id: { type: String }, url: { type: String } },
   createdOn: { type: Date, default: new Date().getTime() },
 });
 

@@ -1,6 +1,8 @@
 const { hashPassword, comparePassword } = require("../utils/hash");
 const User = require("../models/user.model");
 const jwt = require("jsonwebtoken");
+const cloudinary = require("../utils/cloudinary");
+
 const register = async (req, res) => {
   const { name, lastName, email, password, img } = req.body;
 
@@ -14,30 +16,42 @@ const register = async (req, res) => {
   }
 
   const hashedPassword = await hashPassword(password);
+  try {
+    const result = await cloudinary.uploader.upload(img, {
+      folder: "users",
+    });
+    const user = new User({
+      name,
+      lastName,
+      email,
+      password: hashedPassword,
+      img:
+        {
+          public_id: result.public_id,
+          url: result.secure_url,
+        } || "",
+    });
+    await user.save();
 
-  const user = new User({
-    name,
-    lastName,
-    email,
-    password: hashedPassword,
-    img: img || "",
-  });
-  await user.save();
+    const accessToken = jwt.sign(
+      { _id: user._id },
+      process.env.ACCESS_TOKEN_SECRET,
+      {
+        expiresIn: "36000m",
+      }
+    );
 
-  const accessToken = jwt.sign(
-    { _id: user._id },
-    process.env.ACCESS_TOKEN_SECRET,
-    {
-      expiresIn: "36000m",
-    }
-  );
-
-  return res.json({
-    error: false,
-    user,
-    accessToken,
-    message: "User created successfully",
-  });
+    return res.json({
+      error: false,
+      user,
+      accessToken,
+      message: "User created successfully",
+    });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ error: true, message: "Internal Server Error" });
+  }
 };
 const login = async (req, res) => {
   const { email, password } = req.body;

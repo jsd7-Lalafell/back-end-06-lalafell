@@ -1,4 +1,5 @@
 const User = require("../models/user.model");
+const cloudinary = require("../utils/cloudinary");
 
 const getUser = async (req, res) => {
   const { user } = req.user;
@@ -15,6 +16,9 @@ const updateUser = async (req, res) => {
   }
 
   try {
+    const result = await cloudinary.uploader.upload(img, {
+      folder: "users",
+    });
     const user = await User.findOne({ userId: user._id });
     if (!user) {
       return res.status(404).json({ error: true, message: "User not found" });
@@ -29,7 +33,10 @@ const updateUser = async (req, res) => {
       user.email = email;
     }
     if (img) {
-      user.img = img;
+      user.img = {
+        public_id: result.public_id,
+        url: result.secure_url,
+      };
     }
     await user.save();
     return res.json({ error: false, user });
