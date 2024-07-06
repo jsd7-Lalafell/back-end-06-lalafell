@@ -88,6 +88,10 @@ const login = async (req, res) => {
       expiresIn: "1h", // ควรตั้งเวลาให้น้อยลงเพื่อความปลอดภัย
     });
 
+    const check = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET);
+    console.log(`login :`);
+    console.log(check);
+
     return res.json({
       error: false,
       message: "Login Successful",
