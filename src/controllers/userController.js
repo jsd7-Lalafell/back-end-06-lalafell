@@ -2,8 +2,31 @@ const User = require("../models/user.model");
 const cloudinary = require("../utils/cloudinary");
 
 const getUser = async (req, res) => {
-  const { user } = req.user;
-  return res.json({ error: false, user });
+  try {
+    const users = await User.find();
+
+    return res.json({ error: false, users });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ error: true, message: "Internal Server Error" });
+  }
+};
+
+const getProfile = async (req, res) => {
+  const user = req.user;
+  try {
+    const myUser = await User.findOne({ _id: user.id });
+
+    if (!myUser) {
+      return res.status(404).json({ error: true, message: "User not found" });
+    }
+    return res.json({ error: false, myUser });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ error: true, message: "Internal Server Error" });
+  }
 };
 
 const updateUser = async (req, res) => {
@@ -19,7 +42,7 @@ const updateUser = async (req, res) => {
     const result = await cloudinary.uploader.upload(img, {
       folder: "users",
     });
-    const user = await User.findOne({ userId: user._id });
+    const user = await User.findOne({ _id: req.user.id });
     if (!user) {
       return res.status(404).json({ error: true, message: "User not found" });
     }
@@ -48,4 +71,4 @@ const updateUser = async (req, res) => {
   }
 };
 
-module.exports = { getUser, updateUser };
+module.exports = { getUser, updateUser, getProfile };
