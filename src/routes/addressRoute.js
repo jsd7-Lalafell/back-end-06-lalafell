@@ -1,15 +1,25 @@
 const express = require("express");
 const addressController = require("../controllers/AddressController");
-const { authenticateToken } = require("../utils/token");
+const {
+  authenticateMiddleware,
+} = require("../middleware/authenticateMiddleware");
 
 const router = express.Router();
 
-router.get("/adress", authenticateToken, addressController.getAllAddress);
-router.post("/adress", authenticateToken, addressController.createAddress);
-router.patch("/adress/:id", authenticateToken, addressController.updateAddress);
+router.get("/address", authenticateMiddleware, addressController.getAllAddress);
+router.post(
+  "/address",
+  authenticateMiddleware,
+  addressController.createAddress
+);
+router.patch(
+  "/address/:id",
+  authenticateMiddleware,
+  addressController.updateAddress
+);
 router.delete(
-  "/adress/:id",
-  authenticateToken,
+  "/address/:id",
+  authenticateMiddleware,
   addressController.deleteAddress
 );
 
