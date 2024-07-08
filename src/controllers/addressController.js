@@ -1,9 +1,9 @@
 const Address = require("../models/address.model");
 
 const getAllAddress = async (req, res) => {
-  const { user } = req.user;
+  const user = req.user;
   try {
-    const address = await Address.find({ userId: user._id });
+    const address = await Address.find({ userId: user.id });
     return res.json({ error: false, address });
   } catch (error) {
     return res.status(500).json({
@@ -24,7 +24,7 @@ const createAddress = async (req, res) => {
     province,
     zipCode,
   } = req.body;
-  const { user } = req.user;
+  const user = req.user;
 
   if (!name || !lastName || !tel || !address || !subDistrict || !district) {
     return res
@@ -33,7 +33,7 @@ const createAddress = async (req, res) => {
   }
 
   try {
-    const address = new Address({
+    const newAddress = new Address({
       name,
       lastName,
       tel,
@@ -42,19 +42,20 @@ const createAddress = async (req, res) => {
       district,
       province,
       zipCode,
-      userId: user._id,
+      userId: user.id,
     });
 
-    await address.save();
+    await newAddress.save();
+
     return res.json({
       error: false,
-      address,
+      newAddress,
       message: "Address created successfully",
     });
   } catch (error) {
     return res.status(500).json({
       error: true,
-      message: "Internal Server Error",
+      message: `Internal Server Error ${error}`,
     });
   }
 };
@@ -71,7 +72,7 @@ const updateAddress = async (req, res) => {
     province,
     zipCode,
   } = req.body;
-  const { user } = req.user;
+  const user = req.user;
 
   if (
     !name &&
@@ -91,7 +92,7 @@ const updateAddress = async (req, res) => {
   try {
     const address = await Address.findOne({
       _id: addressId,
-      userId: user._id,
+      userId: user.id,
     });
 
     if (!address) {
@@ -121,7 +122,7 @@ const updateAddress = async (req, res) => {
 
 const deleteAddress = async (req, res) => {
   const addressId = req.params.addressId;
-  const { user } = req.user;
+  const user = req.user;
 
   try {
     const address = await Address.findOne();
@@ -132,7 +133,7 @@ const deleteAddress = async (req, res) => {
         .json({ error: true, message: "Address not found" });
     }
 
-    await Address.deleteOne({ _id: addressId, userId: user._id });
+    await Address.deleteOne({ _id: addressId, userId: user.id });
 
     return res.json({
       error: false,
