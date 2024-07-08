@@ -1,9 +1,9 @@
 const Payment = require("../models/payment.model");
 
 const getAllPayment = async (req, res) => {
-  const { user } = req.user;
+  const user = req.user;
   try {
-    const payment = await Payment.find({ userId: user._id });
+    const payment = await Payment.find({ userId: user.id });
     return res.json({ error: false, payment });
   } catch (error) {
     return res.status(500).json({
@@ -15,7 +15,7 @@ const getAllPayment = async (req, res) => {
 
 const createPayment = async (req, res) => {
   const { number1, number2, number3, number4 } = req.body;
-  const { user } = req.user;
+  const user = req.user;
 
   if (!number1 || !number2 || !number3 || !number4) {
     return res
@@ -29,7 +29,7 @@ const createPayment = async (req, res) => {
       number2,
       number3,
       number4,
-      userId: user._id,
+      userId: user.id,
     });
 
     await payment.save();
@@ -49,7 +49,7 @@ const createPayment = async (req, res) => {
 
 const deletePayment = async (req, res) => {
   const paymentId = req.params.paymentId;
-  const { user } = req.user;
+  const user = req.user;
 
   try {
     const payment = await Payment.findOne();
@@ -60,7 +60,7 @@ const deletePayment = async (req, res) => {
         .json({ error: true, message: "Payment not found" });
     }
 
-    await Payment.deleteOne({ _id: paymentId, userId: user._id });
+    await Payment.deleteOne({ _id: paymentId, userId: user.id });
 
     return res.json({
       error: false,
