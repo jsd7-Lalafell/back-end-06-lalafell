@@ -1,19 +1,15 @@
 const jwt = require("jsonwebtoken");
 
-function authenticateToken(req, res, next) {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
-
-  if (!token) {
-    return res.sendStatus(401);
-  }
-
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-    // check for error, assign successfully verified user information to req.user
-    if (err) return res.sendStatus(401);
-    req.user = user;
-    next();
+const sign = (payload) => {
+  console.log("Sign Token", process.env.ACCESS_TOKEN_SECRET);
+  return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
+    expiresIn: "36000m",
   });
-}
+};
 
-module.exports = { authenticateToken };
+const verify = (token) => {
+  console.log("Verify Token", process.env.ACCESS_TOKEN_SECRET);
+  return jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+};
+
+module.exports = { sign, verify };

@@ -33,7 +33,7 @@ const createAddress = async (req, res) => {
   }
 
   try {
-    const address = new Address({
+    const newAddress = new Address({
       name,
       lastName,
       tel,
@@ -45,16 +45,17 @@ const createAddress = async (req, res) => {
       userId: user.id,
     });
 
-    await address.save();
+    await newAddress.save();
+
     return res.json({
       error: false,
-      address,
+      newAddress,
       message: "Address created successfully",
     });
   } catch (error) {
     return res.status(500).json({
       error: true,
-      message: "Internal Server Error",
+      message: `Internal Server Error ${error}`,
     });
   }
 };
