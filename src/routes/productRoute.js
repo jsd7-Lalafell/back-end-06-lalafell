@@ -1,7 +1,7 @@
 const express = require("express");
 const {
-  authenticateMiddleware,
-} = require("../middleware/authenticateMiddleware");
+  adminAuthenticateMiddleware,
+} = require("../middleware/adminAuthenticateMiddleware");
 const productController = require("../controllers/productController");
 
 const router = express.Router();
@@ -10,17 +10,17 @@ router.get("/product", productController.getAllProducts);
 router.get("/product/:id", productController.getProductById);
 router.post(
   "/product",
-  authenticateMiddleware,
+  adminAuthenticateMiddleware,
   productController.createProduct
 );
 router.patch(
   "/product/:id",
-  authenticateMiddleware,
+  adminAuthenticateMiddleware,
   productController.updateProduct
 );
 router.delete(
   "/product/:id",
-  authenticateMiddleware,
+  adminAuthenticateMiddleware,
   productController.deleteProduct
 );
 
