@@ -1,14 +1,20 @@
 const express = require("express");
-const { authenticateToken } = require("../utils/token");
+const {
+  authenticateMiddleware,
+} = require("../middleware/authenticateMiddleware");
 const paymentController = require("../controllers/PaymentController");
 
 const router = express.Router();
 
-router.get("/payment", authenticateToken, paymentController.getAllPayment);
-router.post("/payment", authenticateToken, paymentController.createPayment);
+router.get("/payment", authenticateMiddleware, paymentController.getAllPayment);
+router.post(
+  "/payment",
+  authenticateMiddleware,
+  paymentController.createPayment
+);
 router.delete(
   "/payment/:paymentId",
-  authenticateToken,
+  authenticateMiddleware,
   paymentController.deletePayment
 );
 
