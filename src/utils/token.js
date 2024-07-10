@@ -1,11 +1,9 @@
 const jwt = require("jsonwebtoken");
 
-
 const sign = (payload) => {
   console.log("Sign Token", process.env.ACCESS_TOKEN_SECRET);
   return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
     expiresIn: "36000m",
-
   });
 };
 

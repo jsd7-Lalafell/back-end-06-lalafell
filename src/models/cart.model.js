@@ -4,14 +4,32 @@ const Schema = mongoose.Schema;
 const cartSchema = new Schema({
     product: [{
         product: {
-            type: ObjectId,
-            ref: 'Product'
+            type: Schema.Types.ObjectId,
+            ref: 'Product',   //อ้างอิงถึง Schema product
+            required: true
         },
-        quantity: Number,
-        price: Number,
+        quantity: {
+            type: Number,
+            required: true
+        },
+        price: {
+            type: Number,
+            required: true
+        }
     }],
-    totalPrice: Number,
-
+    totalPrice: {
+        type: Number,
+        default: 0
+    },
+    orderBy: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
+    createdOn: {
+        type: Date,
+        default: Date.now
+    }
 })
 
 module.exports = mongoose.model('Cart', cartSchema);
