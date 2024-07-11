@@ -84,25 +84,32 @@ const login = async (req, res) => {
 
     // Find user by email
     const user = await User.findOne({ email });
-    console.log(user);
-    if (!user) return res.json({ error: true, message: "User not found" });
+    if (!user) {
+      return res.status(404).json({ error: true, message: "User not found" });
+    }
 
     // Compare password
     const isMatch = await comparePassword(password, user.password);
-    if (!isMatch)
-      return res.json({ error: true, message: "Invalid credentials" });
+    if (!isMatch) {
+      return res
+        .status(401)
+        .json({ error: true, message: "Invalid credentials" });
+    }
 
-    console.log("user", user);
     // Generate token
     const accessToken = sign({ user: user._id });
-    delete user.password;
 
-    res.status(200).json({ message: "Login success", data: user, accessToken });
+    // ลบข้อมูลที่ไม่ต้องการ
+    const { password: userPassword, ...userData } = user.toObject();
+
+    res
+      .status(200)
+      .json({ message: "Login success", data: userData, accessToken });
   } catch (error) {
     // จัดการข้อผิดพลาดที่ไม่คาดคิด
     return res.status(500).json({
       error: true,
-      message: `Internal Server Error ${error.message}`,
+      message: `Internal Server Error: ${error.message}`,
     });
   }
 };
