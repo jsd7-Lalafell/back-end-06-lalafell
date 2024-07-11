@@ -2,8 +2,17 @@ const Product = require("../models/product.model");
 const cloudinary = require("../utils/cloudinary");
 
 const getAllProducts = async (req, res) => {
+  const limit = req.query.limit ? parseInt(req.query.limit) : null;
+
   try {
-    const products = await Product.find();
+    let query = Product.find().sort({ createdOn: -1 });
+
+    if (limit) {
+      query = query.limit(limit);
+    }
+
+    const products = await query;
+
     return res.json({ error: false, products });
   } catch (error) {
     return res.status(500).json({
@@ -62,6 +71,7 @@ const createProduct = async (req, res) => {
     const result = await cloudinary.uploader.upload(file.path, {
       folder: "products",
     });
+    // สร้างสินค้าใหม่
     const product = new Product({
       name,
       price,

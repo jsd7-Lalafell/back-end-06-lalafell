@@ -9,7 +9,7 @@ const upload = multer({ dest: "uploads/" });
 
 const router = express.Router();
 
-router.get("/product", productController.getAllProducts);
+router.get("/product", productController.getAllProducts); // ถ้าอยากจำกัด limit ให้ใช้ api/product?limit=10
 router.get("/product/:id", productController.getProductById);
 router.post(
   "/product",
