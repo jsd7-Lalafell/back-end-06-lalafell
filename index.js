@@ -1,45 +1,50 @@
 require("dotenv").config();
-
-const mongoose = require("mongoose");
-mongoose.connect(process.env.MONGO_URI);
-mongoose.connection.on("connected", () => {
-  console.log("connected to mongo✅");
-});
-
-const authRouth = require("./src/routes/authRoute");
-const addressRoute = require("./src/routes/addressRoute");
-const paymentRoute = require("./src/routes/paymentRoute");
-const productRoute = require("./src/routes/productRoute");
-const userRoute = require("./src/routes/userRoute");
-
 const express = require("express");
+const mongoose = require("mongoose");
 const cors = require("cors");
 const app = express();
 
+// Middleware
 app.use(express.json());
-app.use(
-  cors({
-    origin: "*",
-  })
-);
+app.use(cors({ origin: "*" }));
 
-//API line
-app.get("/", (req, res) => {
-  res.json({ data: "respond received from the server!" });
+// Connect to MongoDB
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+mongoose.connection.on("connected", () => {
+  console.log("Connected to MongoDB ✅");
+});
+mongoose.connection.on("error", (err) => {
+  console.error("MongoDB connection error:", err);
 });
 
-//User Authenticate----------------
-app.use("/", authRouth);
-//User---------------
-app.use("/", userRoute);
-//Address---------------
-app.use("/", addressRoute);
-//Payment--------------------
-app.use("/", paymentRoute);
-//Product-------------------
-app.use("/", productRoute);
+// Routes
+const authRoute = require("./src/routes/authRoute");
+const userRoute = require("./src/routes/userRoute");
+const addressRoute = require("./src/routes/addressRoute");
+const paymentRoute = require("./src/routes/paymentRoute");
+const productRoute = require("./src/routes/productRoute");
+const checkoutRoute = require("./src/routes/checkoutRouter");
 
+// Register routes
+app.use("/", authRoute);
+app.use("/", userRoute);
+app.use("/", addressRoute);
+app.use("/", paymentRoute);
+app.use("/", productRoute);
+app.use("/", checkoutRoute);
+
+// Default route
+app.get("/", (req, res) => {
+  res.json({ data: "Response received from the server!" });
+});
+
+// Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`server is running on port ${PORT}✅`);
+  console.log(`Server is running on port ${PORT} ✅`);
 });
+
+
