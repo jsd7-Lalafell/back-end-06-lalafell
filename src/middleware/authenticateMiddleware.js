@@ -1,5 +1,5 @@
 const { verify } = require("../utils/token");
-const User = require("../models/user.model"); // อย่าลืม require โมเดล User
+const User = require("../models/user.model");
 
 const authenticateMiddleware = async (req, res, next) => {
   try {

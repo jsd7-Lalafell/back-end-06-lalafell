@@ -1,4 +1,14 @@
 require("dotenv").config();
+
+const authRoute = require("./src/routes/authRoute");
+const addressRoute = require("./src/routes/addressRoute");
+const paymentRoute = require("./src/routes/paymentRoute");
+const productRoute = require("./src/routes/productRoute");
+const userRoute = require("./src/routes/userRoute");
+const cartRoute = require("./src/routes/cartRoute");
+const orderRoute = require("./src/routes/orderRoute");
+const orderHistoryRoute = require("./src/routes/orderHistoryRoute")
+
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -28,12 +38,20 @@ const paymentRoute = require("./src/routes/paymentRoute");
 const productRoute = require("./src/routes/productRoute");
 const checkoutRoute = require("./src/routes/checkoutRouter");
 
-// Register routes
+//User Authenticate----------------
 app.use("/", authRoute);
+//User---------------
 app.use("/", userRoute);
 app.use("/", addressRoute);
 app.use("/", paymentRoute);
 app.use("/", productRoute);
+//Cart----------------------
+app.use("/", cartRoute);
+//Order---------------------
+app.use("/", orderRoute);
+//OrderHistory---------------
+app.use('/', orderHistoryRoute);
+//Checkout
 app.use("/", checkoutRoute);
 
 // Default route
