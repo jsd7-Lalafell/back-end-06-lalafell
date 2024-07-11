@@ -6,11 +6,17 @@ mongoose.connection.on("connected", () => {
   console.log("connected to mongo✅");
 });
 
-const authRouth = require("./src/routes/authRoute");
+const authRoute = require("./src/routes/authRoute");
 const addressRoute = require("./src/routes/addressRoute");
 const paymentRoute = require("./src/routes/paymentRoute");
 const productRoute = require("./src/routes/productRoute");
 const userRoute = require("./src/routes/userRoute");
+const cartRoute = require("./src/routes/cartRoute");
+const orderRoute = require("./src/routes/orderRoute");
+const orderHistoryRoute = require("./src/routes/orderHistoryRoute")
+
+
+
 
 const express = require("express");
 const cors = require("cors");
@@ -29,7 +35,7 @@ app.get("/", (req, res) => {
 });
 
 //User Authenticate----------------
-app.use("/", authRouth);
+app.use("/", authRoute);
 //User---------------
 app.use("/", userRoute);
 //Address---------------
@@ -38,6 +44,15 @@ app.use("/", addressRoute);
 app.use("/", paymentRoute);
 //Product-------------------
 app.use("/", productRoute);
+//Cart----------------------
+app.use("/", cartRoute);
+//Order---------------------
+app.use("/", orderRoute);
+//OrderHistory---------------
+app.use('/', orderHistoryRoute);
+
+
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
