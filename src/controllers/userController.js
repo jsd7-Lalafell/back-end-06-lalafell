@@ -48,4 +48,22 @@ const updateProfile = async (req, res) => {
   }
 };
 
-module.exports = { getUser, updateProfile, getProfile };
+const updateProfileImage = async (req, res) => {
+  const user = req.user;
+
+  try {
+    const file = req.file;
+    const result = await cloudinary.uploader.upload(file.path, {
+      folder: "users",
+    });
+    user.img = result.secure_url;
+    await user.save();
+    return res.json({ error: false, myUser: user });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ error: true, message: "Internal Server Error" });
+  }
+};
+
+module.exports = { getUser, updateProfile, getProfile, updateProfileImage };

@@ -44,6 +44,9 @@ const register = async (req, res) => {
 
     await user.save();
 
+    const fs = require("fs");
+    fs.unlinkSync(file.path);
+
     const accessToken = sign({ user });
 
     return res.status(201).json({
