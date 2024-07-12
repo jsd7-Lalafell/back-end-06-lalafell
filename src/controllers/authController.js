@@ -1,20 +1,23 @@
 const { hashPassword, comparePassword } = require("../utils/hash");
 const User = require("../models/user.model");
 const { sign } = require("../utils/token");
-const cloudinary = require("../utils/cloudinary").v2;
+const cloudinary = require("../utils/cloudinary");
 
 const register = async (req, res) => {
-  const { name, lastName, email, password, img } = req.body;
-
-  // ตรวจสอบว่าข้อมูลที่จำเป็นครบถ้วนหรือไม่
-  if (!name || !lastName || !email || !password) {
+  const { firstName, lastName, email, password, img } = req.body;
+  console.log(req.body);
+  if (!firstName || !lastName || !email || !password) {
     return res
       .status(400)
       .json({ error: true, message: "Please provide all fields" });
   }
 
+  const file = req.file;
+  if (img && !file) {
+    return res.status(400).json({ error: true, message: "No file uploaded" });
+  }
+
   try {
-    // ตรวจสอบว่าผู้ใช้งานมีอยู่แล้วหรือไม่
     const userExists = await User.findOne({ email });
     if (userExists) {
       return res
@@ -22,41 +25,32 @@ const register = async (req, res) => {
         .json({ error: true, message: "User already exists" });
     }
 
-    // เข้ารหัสรหัสผ่าน
     const hashedPassword = await hashPassword(password);
 
-    // อัปโหลดภาพไปยัง Cloudinary
-    let imgData = {};
-    if (img) {
-      const result = await cloudinary.uploader.upload(img, {
-        folder: "users",
-      });
-      imgData = {
-        public_id: result.public_id,
-        url: result.secure_url,
-      };
-    }
-
-    // สร้างผู้ใช้ใหม่
-    const user = new User({
-      name,
-      lastName,
-      email,
-      password: hashedPassword,
-      img: imgData || "",
+    const result = await cloudinary.uploader.upload(file.path, {
+      folder: "users",
     });
 
-    // บันทึกผู้ใช้
+    const user = new User({
+      name: firstName,
+      lastName: lastName,
+      email: email,
+      password: hashedPassword,
+      img: {
+        public_id: result.public_id,
+        url: result.secure_url,
+      },
+    });
+
     await user.save();
 
-    // สร้าง Access Token
     const accessToken = sign({ user });
 
     return res.status(201).json({
       error: false,
       user: {
         id: user.id,
-        name: user.name,
+        firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
         img: user.img,
@@ -84,25 +78,32 @@ const login = async (req, res) => {
 
     // Find user by email
     const user = await User.findOne({ email });
-    console.log(user);
-    if (!user) return res.json({ error: true, message: "User not found" });
+    if (!user) {
+      return res.status(404).json({ error: true, message: "User not found" });
+    }
 
     // Compare password
     const isMatch = await comparePassword(password, user.password);
-    if (!isMatch)
-      return res.json({ error: true, message: "Invalid credentials" });
+    if (!isMatch) {
+      return res
+        .status(401)
+        .json({ error: true, message: "Invalid credentials" });
+    }
 
-    console.log("user", user);
     // Generate token
     const accessToken = sign({ user: user._id });
-    delete user.password;
 
-    res.status(200).json({ message: "Login success", data: user, accessToken });
+    // ลบข้อมูลที่ไม่ต้องการ
+    const { password: userPassword, ...userData } = user.toObject();
+
+    res
+      .status(200)
+      .json({ message: "Login success", data: userData, accessToken });
   } catch (error) {
     // จัดการข้อผิดพลาดที่ไม่คาดคิด
     return res.status(500).json({
       error: true,
-      message: `Internal Server Error ${error.message}`,
+      message: `Internal Server Error: ${error.message}`,
     });
   }
 };
