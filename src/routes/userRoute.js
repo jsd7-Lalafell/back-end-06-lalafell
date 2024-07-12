@@ -11,6 +11,6 @@ const router = express.Router();
 
 router.get("/users", adminAuthenticateMiddleware, userController.getUser);
 router.get("/profile", authenticateMiddleware, userController.getProfile);
-router.patch("/user/:id", authenticateMiddleware, userController.updateUser);
+router.patch("/profile", authenticateMiddleware, userController.updateProfile);
 
 module.exports = router;

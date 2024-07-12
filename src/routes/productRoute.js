@@ -3,14 +3,18 @@ const {
   adminAuthenticateMiddleware,
 } = require("../middleware/adminAuthenticateMiddleware");
 const productController = require("../controllers/productController");
+const multer = require("multer");
+
+const upload = multer({ dest: "uploads/" });
 
 const router = express.Router();
 
-router.get("/product", productController.getAllProducts);
+router.get("/product", productController.getAllProducts); // ถ้าอยากจำกัด limit ให้ใช้ api/product?limit=10
 router.get("/product/:id", productController.getProductById);
 router.post(
   "/product",
   adminAuthenticateMiddleware,
+  upload.single("img"),
   productController.createProduct
 );
 router.patch(
