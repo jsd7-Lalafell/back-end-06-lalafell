@@ -1,4 +1,16 @@
 require("dotenv").config();
+
+// Routes
+const authRoute = require("./src/routes/authRoute");
+const userRoute = require("./src/routes/userRoute");
+const addressRoute = require("./src/routes/addressRoute");
+const paymentRoute = require("./src/routes/paymentRoute");
+const productRoute = require("./src/routes/productRoute");
+const checkoutRoute = require("./src/routes/checkoutRouter");
+const cartRoute = require("./src/routes/cartRoute");
+const orderRoute = require("./src/routes/orderRoute");
+const orderHistoryRoute = require("./src/routes/orderHistoryRoute");
+
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -20,20 +32,20 @@ mongoose.connection.on("error", (err) => {
   console.error("MongoDB connection error:", err);
 });
 
-// Routes
-const authRoute = require("./src/routes/authRoute");
-const userRoute = require("./src/routes/userRoute");
-const addressRoute = require("./src/routes/addressRoute");
-const paymentRoute = require("./src/routes/paymentRoute");
-const productRoute = require("./src/routes/productRoute");
-const checkoutRoute = require("./src/routes/checkoutRouter");
-
-// Register routes
+//User Authenticate----------------
 app.use("/", authRoute);
+//User---------------
 app.use("/", userRoute);
 app.use("/", addressRoute);
 app.use("/", paymentRoute);
 app.use("/", productRoute);
+//Cart----------------------
+app.use("/", cartRoute);
+//Order---------------------
+app.use("/", orderRoute);
+//OrderHistory---------------
+app.use("/", orderHistoryRoute);
+//Checkout---------------
 app.use("/", checkoutRoute);
 
 // Default route
@@ -46,5 +58,3 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT} ✅`);
 });
-
-

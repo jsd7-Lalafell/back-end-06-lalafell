@@ -2,8 +2,17 @@ const Product = require("../models/product.model");
 const cloudinary = require("../utils/cloudinary");
 
 const getAllProducts = async (req, res) => {
+  const limit = req.query.limit ? parseInt(req.query.limit) : null;
+
   try {
-    const products = await Product.find();
+    let query = Product.find().sort({ createdOn: -1 });
+
+    if (limit) {
+      query = query.limit(limit);
+    }
+
+    const products = await query;
+
     return res.json({ error: false, products });
   } catch (error) {
     return res.status(500).json({
@@ -26,18 +35,43 @@ const getProductById = async (req, res) => {
 };
 
 const createProduct = async (req, res) => {
-  const { name, price, description, type, spec, img } = req.body;
-  const { user } = req.user;
-  if (!name || !price || !description || !img || !type || !spec) {
-    return res
-      .status(400)
-      .json({ error: true, message: "Please provide all fields" });
+  const { name, price, description, type } = req.body;
+  const user = req.user;
+
+  if (!name || !price || !description || !type) {
+    return res.status(400).json({
+      error: true,
+      message: "Please provide all required fields",
+    });
+  } else {
+    console.log(req.body);
   }
 
+  if (!req.file) {
+    return res.status(400).json({
+      error: true,
+      message: "No file uploaded",
+    });
+  } else {
+    console.log(req.file);
+  }
+
+  const file = req.file; // ไฟล์ที่อัปโหลดจาก Multer จะอยู่ใน req.file
+  if (!file) {
+    return res.status(400).json({
+      error: true,
+      message: "No file uploaded",
+    });
+  }
+
+  console.log(user);
+
   try {
-    const result = await cloudinary.uploader.upload(img, {
+    // ดำเนินการอัปโหลดไฟล์ไปยัง Cloudinary หรือทำอย่างอื่นตามที่ต้องการ
+    const result = await cloudinary.uploader.upload(file.path, {
       folder: "products",
     });
+    // สร้างสินค้าใหม่
     const product = new Product({
       name,
       price,
@@ -47,8 +81,7 @@ const createProduct = async (req, res) => {
         url: result.secure_url,
       },
       type,
-      spec,
-      addBy: user._id,
+      addBy: user.name,
     });
 
     await product.save();
@@ -59,6 +92,7 @@ const createProduct = async (req, res) => {
       message: "Product created successfully",
     });
   } catch (error) {
+    console.error("Error creating product:", error.message);
     return res.status(500).json({
       error: true,
       message: "Internal Server Error",

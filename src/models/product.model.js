@@ -6,7 +6,6 @@ const productSchema = new Schema({
   price: { type: Number, required: true },
   img: { public_id: { type: String }, url: { type: String } },
   type: { type: String, required: true },
-  spec: { type: String, required: true },
   description: { type: String, required: true },
   createdOn: { type: Date, default: new Date().getTime() },
   addBy: { type: String, required: true },
