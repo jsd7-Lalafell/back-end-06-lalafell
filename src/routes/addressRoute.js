@@ -1,5 +1,5 @@
 const express = require("express");
-const addressController = require("../controllers/AddressController");
+const addressController = require("../controllers/addressController");
 const {
   authenticateMiddleware,
 } = require("../middleware/authenticateMiddleware");
