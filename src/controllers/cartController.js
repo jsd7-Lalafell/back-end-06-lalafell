@@ -141,8 +141,8 @@ const updateCart2 = async (req, res) => {
             });
         }
 
-        console.log(cart);
-        cart.totalPrice = totalPrice;
+        console.log("debug2",cart.totalPrice);
+        cart.totalPrice += totalPrice;
 
         const totalPrices = cart.product
             .map((e) => e.price)
