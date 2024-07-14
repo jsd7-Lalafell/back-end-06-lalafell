@@ -121,26 +121,22 @@ const updateCart2 = async (req, res) => {
 
         // Update existing cart
         let productExists = false;
-        console.log("ใน mongo:", cart.product[0].product._id);
-        console.log("ใน body:", product[0].product);
         for (let i = 0; i < cart.product.length; i++) {
             if (cart.product[i].product._id.toString() === product[0].product.toString()) {
                 cart.product[i].quantity += product[0].quantity;
                 cart.product[i].price += product[0].price; // Update the price if necessary
                 productExists = true;
-                break;
             }
-
-            cart.product.push({
-                product: product[0].product,
-                quantity: product[0].quantity,
-                price: product[0].price,
-            });
         }
 
-        console.log(cart);
-        cart.totalPrice = totalPrice;
+        cart.product.push({
+            product: product[0].product,
+            quantity: product[0].quantity,
+            price: product[0].price,
+        });
 
+        // calculate total price
+        cart.totalPrice = totalPrice;
         const totalPrices = cart.product
             .map((e) => e.price)
             .reduce((sum, current) => sum + current, 0);
