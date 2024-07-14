@@ -88,9 +88,9 @@ const updateCart2 = async (req, res) => {
     const { id } = req.user;
     const cartId = req.params.cartId;
 
-    // if () {
-    //     return res.status(400).json({ error: true, message: "Please provide all fields" });
-    // }
+    if (!product || !totalPrice) {
+        return res.status(200).json({ error: true, message: "Please provide all fields" });
+    }
     console.log("test", req.body);
     try {
         let cart = await Cart.findOne({ orderBy: id }).populate("product.product");
@@ -130,10 +130,7 @@ const updateCart2 = async (req, res) => {
                 productExists = true;
                 break;
             }
-        }
 
-        if (!productExists) {
-            console.log("debug", product);
             cart.product.push({
                 product: product[0].product,
                 quantity: product[0].quantity,
