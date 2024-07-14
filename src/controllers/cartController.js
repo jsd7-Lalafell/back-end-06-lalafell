@@ -91,9 +91,10 @@ const updateCart2 = async (req, res) => {
     if (!product || !totalPrice) {
         return res.status(200).json({ error: true, message: "Please provide all fields" });
     }
-    console.log("test", req.body);
+    // console.log("test", req.body);
     try {
         let cart = await Cart.findOne({ orderBy: id }).populate("product.product");
+        console.log("testCart", cart);
         if (!cart) {
             // Create new cart if not exists
             try {
@@ -123,23 +124,24 @@ const updateCart2 = async (req, res) => {
         let productExists = false;
         for (let i = 0; i < cart.product.length; i++) {
             if (cart.product[i].product._id.toString() === product[0].product.toString()) {
-                cart.product[i].quantity += product[0].quantity;
-                cart.product[i].price += product[0].price; // Update the price if necessary
+                cart.product[i].quantity += product[0].quantity;// Update the price if necessary
                 productExists = true;
             }
+
+        }
+        if (!productExists) {
+            cart.product.push({
+                product: product[0].product,
+                quantity: product[0].quantity,
+                price: product[0].price,
+            });
         }
 
-        cart.product.push({
-            product: product[0].product,
-            quantity: product[0].quantity,
-            price: product[0].price,
-        });
 
         // calculate total price
-        cart.totalPrice = totalPrice;
-        const totalPrices = cart.product
-            .map((e) => e.price)
-            .reduce((sum, current) => sum + current, 0);
+        console.log("Debug", cart)
+        // cart.totalPrice = totalPrice;
+        const totalPrices = cart.product.reduce((sum, current) => sum + current.price * current.quantity, 0);
         cart.totalPrice = totalPrices;
         const savedCart = await cart.save();
 
