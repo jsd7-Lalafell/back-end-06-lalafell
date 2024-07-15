@@ -4,8 +4,8 @@ const { authenticateMiddleware } = require("../middleware/authenticateMiddleware
 const router = express.Router();
 
 router.get('/cart', authenticateMiddleware, cartController.getCart);
-router.post('/cart', authenticateMiddleware, cartController.createCart);
-router.patch('/cart/:cartId', authenticateMiddleware, cartController.updateCart);
+router.patch('/cart', authenticateMiddleware, cartController.updateCart);
 router.delete('/cart/:cartId', authenticateMiddleware, cartController.deleteCart);
+router.put('/cart/:cartId', authenticateMiddleware, cartController.updateCartItem);
 
 module.exports = router;
