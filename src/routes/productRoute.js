@@ -3,6 +3,7 @@ const {
   adminAuthenticateMiddleware,
 } = require("../middleware/adminAuthenticateMiddleware");
 const productController = require("../controllers/productController");
+const { authenticateMiddleware } = require("../middleware/authenticateMiddleware");
 const multer = require("multer");
 
 const upload = multer({ dest: "uploads/" });
@@ -27,5 +28,7 @@ router.delete(
   adminAuthenticateMiddleware,
   productController.deleteProduct
 );
+
+router.get("/search", authenticateMiddleware, productController.searchProducts);
 
 module.exports = router;
