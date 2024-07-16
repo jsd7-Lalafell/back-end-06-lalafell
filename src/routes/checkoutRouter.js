@@ -11,5 +11,3 @@ router.post("/checkout", authenticateMiddleware, checkoutController.createChecko
 
 module.exports = router;
 
-
-

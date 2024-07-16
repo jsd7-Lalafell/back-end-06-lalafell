@@ -25,6 +25,10 @@ const checkoutSchema = new mongoose.Schema({
         price: {
           type: Number,
           required: true
+        },
+        img: {
+          type: String,
+          required: true
         }
       }
     ],
@@ -40,13 +44,13 @@ const checkoutSchema = new mongoose.Schema({
       type: String,
       required: true
     },
-    OrderDate: {
+    orderDate: {
       type: Date,
       default: Date.now
     }
-  });
-  
+});
 
 const Checkout = mongoose.model("Checkout", checkoutSchema);
 
 module.exports = Checkout;
+
